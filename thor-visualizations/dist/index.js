@@ -38,13 +38,23 @@ var _circle_gauge = require('./circle_gauge');
 
 var _circle_gauge2 = _interopRequireDefault(_circle_gauge);
 
+var _half_gauge = require('./half_gauge');
+
+var _half_gauge2 = _interopRequireDefault(_half_gauge);
+
+var _top_n = require('./top_n');
+
+var _top_n2 = _interopRequireDefault(_top_n);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
   // visualizations
+  TopN: _top_n2.default,
   Timeseries: _timeseries2.default,
   Gauge: _gauge2.default,
   CircleGauge: _circle_gauge2.default,
+  HalfGauge: _half_gauge2.default,
   Metric: _metric2.default,
   // utilities
   getLastValue: _get_last_value2.default,

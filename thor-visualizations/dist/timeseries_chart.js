@@ -74,6 +74,11 @@ var Chart = _react2.default.createClass({
     if (this.props.onMouseLeave) (0, _flot2.default)(target).on('mouseleave', this.handleMouseLeave);
     if (this.props.onBrush) (0, _flot2.default)(target).off('plotselected', this.brushChart);
     this.plot.shutdown();
+    if (this.props.crosshair) {
+      (0, _flot2.default)(target).off('plothover', this.handlePlotover);
+      _events2.default.off('thorPlotover', this.handleThorPlotover);
+      _events2.default.off('thorPlotleave', this.handleThorPlotleave);
+    }
   },
   componentWillUnmount: function componentWillUnmount() {
     this.shutdownChart();
@@ -153,9 +158,17 @@ var Chart = _react2.default.createClass({
         borderWidth: 1,
         borderColor: lineColor,
         hoverable: true,
-        mouseActiveRadius: 50
+        mouseActiveRadius: 200
       }
     };
+
+    if (this.props.crosshair) {
+      _lodash2.default.set(opts, 'crosshair', {
+        mode: 'x',
+        color: this.props.reversed ? '#FFF' : '#000',
+        lineWidth: 1
+      });
+    }
 
     if (this.props.onBrush) {
       _lodash2.default.set(opts, 'selection', { mode: 'x', color: textColor });
@@ -211,12 +224,38 @@ var Chart = _react2.default.createClass({
     (0, _flot2.default)(target).on('plothover', this.handleMouseOver);
     (0, _flot2.default)(target).on('mouseleave', this.handleMouseLeave);
 
+    if (this.props.crosshair) {
+
+      this.handleThorPlotover = function (e, pos, item, originalPlot) {
+        if (_this2.plot !== originalPlot) {
+          _this2.plot.setCrosshair({ x: _lodash2.default.get(pos, 'x') });
+          _this2.props.plothover(e, pos, item);
+        }
+      };
+
+      this.handlePlotover = function (e, pos, item) {
+        return _events2.default.trigger('thorPlotover', [pos, item, _this2.plot]);
+      };
+      this.handlePlotleave = function (e) {
+        return _events2.default.trigger('thorPlotleave');
+      };
+      this.handleThorPlotleave = function (e) {
+        _this2.plot.clearCrosshair();
+        if (_this2.props.plothover) _this2.props.plothover(e);
+      };
+
+      (0, _flot2.default)(target).on('plothover', this.handlePlotover);
+      (0, _flot2.default)(target).on('mouseleave', this.handlePlotleave);
+      _events2.default.on('thorPlotover', this.handleThorPlotover);
+      _events2.default.on('thorPlotleave', this.handleThorPlotleave);
+    }
+
     if (_lodash2.default.isFunction(this.props.plothover)) {
       (0, _flot2.default)(target).bind('plothover', this.props.plothover);
     }
 
     (0, _flot2.default)(target).on('mouseleave', function (e) {
-      _events2.default.trigger('rhythmPlotLeave');
+      _events2.default.trigger('thorPlotleave');
     });
 
     if (_lodash2.default.isFunction(this.props.onBrush)) {
@@ -224,12 +263,9 @@ var Chart = _react2.default.createClass({
         _this2.props.onBrush(ranges);
         _this2.plot.clearSelection();
       };
+
       (0, _flot2.default)(target).on('plotselected', this.brushChart);
     }
-
-    this.state = {
-      crosshair: { x: null, y: null }
-    };
   },
   render: function render() {
     var style = {
@@ -249,28 +285,46 @@ var Chart = _react2.default.createClass({
 exports.default = _react2.default.createClass({
   displayName: 'timeseries_chart',
   getInitialState: function getInitialState() {
-    return { show: false };
+    return {
+      showTooltip: false,
+      mouseHoverTimer: false
+    };
+  },
+  calculateLeftRight: function calculateLeftRight(item, plot) {
+    var el = this.refs.container;
+    var offset = plot.offset();
+    var canvas = plot.getCanvas();
+    var point = plot.pointOffset({ x: item.datapoint[0], y: item.datapoint[1] });
+    var edge = (point.left + 10) / canvas.width;
+    var right = void 0;
+    var left = void 0;
+    if (edge > 0.5) {
+      right = canvas.width - point.left;
+      left = null;
+    } else {
+      right = null;
+      left = point.left;
+    }
+    return [left, right];
   },
   handleMouseOver: function handleMouseOver(e, pos, item, plot) {
+
+    if (typeof this.state.mouseHoverTimer === 'number') {
+      window.clearTimeout(this.state.mouseHoverTimer);
+    }
+
     if (item) {
-      var el = this.refs.container;
       var plotOffset = plot.getPlotOffset();
-      var offset = plot.offset();
-      var canvas = plot.getCanvas();
       var point = plot.pointOffset({ x: item.datapoint[0], y: item.datapoint[1] });
-      var edge = (point.left + 10) / canvas.width;
-      var right = void 0;
-      var left = void 0;
-      if (edge > 0.5) {
-        right = canvas.width - point.left;
-        left = null;
-      } else {
-        right = null;
-        left = point.left;
-      }
+
+      var _calculateLeftRight = this.calculateLeftRight(item, plot);
+
+      var left = _calculateLeftRight[0];
+      var right = _calculateLeftRight[1];
+
       var top = point.top;
       this.setState({
-        show: true,
+        showTooltip: true,
         item: item,
         left: left,
         right: right,
@@ -280,7 +334,11 @@ exports.default = _react2.default.createClass({
     }
   },
   handleMouseLeave: function handleMouseLeave(e, plot) {
-    this.setState({ show: false });
+    var _this3 = this;
+
+    this.state.mouseHoverTimer = window.setTimeout(function () {
+      _this3.setState({ showTooltip: false });
+    }, 250);
   },
   render: function render() {
     var _state = this.state;
@@ -292,77 +350,109 @@ exports.default = _react2.default.createClass({
 
     var tooltip = void 0;
 
-    if (item) {
-      var styles = (0, _reactcss2.default)({
-        default: {
-          tooltip: {
-            position: 'absolute',
-            top: top,
-            left: left,
-            right: right,
-            zIndex: 50000,
-            backgroundColor: 'rgba(0,0,0,0.7)',
-            color: 'white',
-            fontSize: '12px',
-            padding: '4px 8px',
-            borderRadius: '4px'
-          },
-          date: {
-            color: 'rgba(255,255,255,0.7)'
-          },
-          items: {
-            display: 'flex',
-            alignItems: 'center'
-          },
-          text: {
-            whiteSpace: 'nowrap',
-            marginRight: 5
-          },
-          icon: {
-            marginRight: 5
-          },
-          value: {
-            flexShrink: 0,
-            marginLeft: 5
-          }
+    var styles = (0, _reactcss2.default)({
+      showTooltip: {
+        tooltipContainer: {
+          pointerEvents: 'none',
+          position: 'absolute',
+          top: top - 28,
+          left: left,
+          right: right,
+          zIndex: 100,
+          display: 'flex',
+          alignItems: 'center',
+          padding: '0 5px'
         },
-        hide: {
-          tooltip: { display: 'none' }
+        tooltip: {
+          backgroundColor: this.props.reversed ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)',
+          color: this.props.reversed ? 'black' : 'white',
+          fontSize: '12px',
+          padding: '4px 8px',
+          borderRadius: '4px'
+        },
+        rightCaret: {
+          display: right ? 'block' : 'none',
+          color: this.props.reversed ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'
+        },
+        leftCaret: {
+          display: left ? 'block' : 'none',
+          color: this.props.reversed ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'
+        },
+        date: {
+          color: this.props.reversed ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.7)',
+          fontSize: '12px',
+          lineHeight: '12px'
+        },
+        items: {
+          display: 'flex',
+          alignItems: 'center'
+        },
+        text: {
+          whiteSpace: 'nowrap',
+          fontSize: '12px',
+          lineHeight: '12px',
+          marginRight: 5
+        },
+        icon: {
+          marginRight: 5
+        },
+        value: {
+          fontSize: '12px',
+          flexShrink: 0,
+          lineHeight: '12px',
+          marginLeft: 5
         }
-      }, { hide: !this.state.show });
+      },
+      hideTooltip: {
+        tooltipContainer: { display: 'none' }
+      }
+    }, {
+      showTooltip: this.state.showTooltip,
+      hideTooltip: !this.state.showTooltip
+    });
+
+    if (item) {
       var metric = series.find(function (r) {
         return r.id === item.series.id;
       });
       var formatter = metric && metric.tickFormatter || this.props.tickFormatter || function (v) {
         return v;
       };
+      var value = item.datapoint[2] ? item.datapoint[1] - item.datapoint[2] : item.datapoint[1];
+      var caretClassName = right ? 'fa fa-caret-right' : 'fa-caret-left';
       tooltip = _react2.default.createElement(
         'div',
-        { style: styles.tooltip },
+        { style: styles.tooltipContainer },
+        _react2.default.createElement('i', { className: 'fa fa-caret-left', style: styles.leftCaret }),
         _react2.default.createElement(
           'div',
-          { style: styles.items },
+          { style: styles.tooltip },
           _react2.default.createElement(
             'div',
-            { style: styles.icon },
-            _react2.default.createElement('i', { className: 'fa fa-circle', style: { color: item.series.color } })
+            { style: styles.items },
+            _react2.default.createElement(
+              'div',
+              { style: styles.icon },
+              _react2.default.createElement('i', { className: 'fa fa-circle', style: { color: item.series.color } })
+            ),
+            _react2.default.createElement(
+              'div',
+              { style: styles.text },
+              item.series.label
+            ),
+            _react2.default.createElement(
+              'div',
+              { style: styles.value },
+              formatter(value)
+            )
           ),
           _react2.default.createElement(
             'div',
-            { style: styles.text },
-            item.series.label
-          ),
-          _react2.default.createElement(
-            'div',
-            { style: styles.value },
-            formatter(item.datapoint[1])
+            { style: styles.date },
+            (0, _moment2.default)(item.datapoint[0]).format('lll')
           )
         ),
-        _react2.default.createElement(
-          'div',
-          { style: styles.date },
-          (0, _moment2.default)(item.datapoint[0]).format('lll')
-        )
+        _react2.default.createElement('i', { className: 'fa fa-caret-right', style: styles.rightCaret })
       );
     }
 
@@ -373,14 +463,16 @@ exports.default = _react2.default.createClass({
       position: 'relative'
     };
 
+    var params = _extends({
+      onMouseLeave: this.handleMouseLeave,
+      onMouseOver: this.handleMouseOver
+    }, this.props);
+
     return _react2.default.createElement(
       'div',
       { ref: 'container', style: container },
       tooltip,
-      _react2.default.createElement(Chart, _extends({
-        onMouseLeave: this.handleMouseLeave,
-        onMouseOver: this.handleMouseOver
-      }, this.props))
+      _react2.default.createElement(Chart, params)
     );
   }
 });
