@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  {% include head.html %}
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <a href="{{ '/' | relative_url }}" class="site-name">{{ site.title }}</a>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme" title="Toggle light/dark mode">
+        <span class="theme-icon"></span>
+      </button>
+    </nav>
+  </header>
+
+  <main class="site-main">
+    {{ content }}
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; {{ site.time | date: "%Y" }} {{ site.author }}</p>
+  </footer>
+
+  <script src="{{ '/assets/js/theme.js' | relative_url }}"></script>
+  <script>hljs.highlightAll();</script>
+</body>
+</html>

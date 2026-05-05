@@ -1,0 +1,24 @@
+title: simianhacker
+description: Notes, insights, and things worth writing down.
+url: "https://simianhacker.github.io"
+baseurl: ""
+author: simianhacker
+
+# Build
+markdown: kramdown
+highlighter: rouge
+permalink: /:slug/
+
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    css_class: "highlight"
+
+# Exclude from build
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - .bundle
+  - vendor
