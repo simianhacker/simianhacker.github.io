@@ -2,29 +2,53 @@
 layout: default
 ---
 
-<div class="home">
-  <div class="home-header">
-    <h1 class="home-title">Blog</h1>
-    <p class="home-description">{{ site.description }}</p>
-  </div>
+{% assign latest = site.posts.first %}
+{% assign recent = site.posts | offset: 1 | limit: 3 %}
 
-  {% if site.posts.size > 0 %}
-    <ul class="post-list">
-      {% for post in site.posts %}
-        <li class="post-item">
-          <time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">
-            {{ post.date | date: "%B %-d, %Y" }}
-          </time>
-          <h2 class="post-title">
-            <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-          </h2>
-          {% if post.description %}
-            <p class="post-excerpt">{{ post.description }}</p>
-          {% endif %}
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p class="no-posts">No posts yet.</p>
+{% if latest %}
+  <article class="featured-post">
+    <header class="featured-post-header">
+      <time class="post-date" datetime="{{ latest.date | date_to_xmlschema }}">
+        {{ latest.date | date: "%B %-d, %Y" }}
+      </time>
+      <h1 class="featured-post-title">
+        <a href="{{ latest.url | relative_url }}">{{ latest.title }}</a>
+      </h1>
+      {% if latest.description %}
+        <p class="post-description">{{ latest.description }}</p>
+      {% endif %}
+    </header>
+    <div class="featured-post-content post-content">
+      {{ latest.content }}
+    </div>
+  </article>
+
+  {% if recent.size > 0 %}
+    <section class="recent-posts">
+      <h2 class="recent-posts-heading">Recent</h2>
+      <ul class="post-list">
+        {% for post in recent %}
+          <li class="post-item">
+            <time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">
+              {{ post.date | date: "%B %-d, %Y" }}
+            </time>
+            <h3 class="post-item-title">
+              <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+            </h3>
+            {% if post.description %}
+              <p class="post-excerpt">{{ post.description }}</p>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
   {% endif %}
-</div>
+
+  {% if site.posts.size > 4 %}
+    <div class="archive-link-wrap">
+      <a href="{{ '/archive/' | relative_url }}" class="archive-link">All posts &rarr;</a>
+    </div>
+  {% endif %}
+{% else %}
+  <p class="no-posts">No posts yet.</p>
+{% endif %}

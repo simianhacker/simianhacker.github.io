@@ -147,27 +147,8 @@ body {
 }
 
 /* ============================================================
-   HOME
+   SHARED POST LIST
    ============================================================ */
-
-.home-header {
-  margin-bottom: 56px;
-}
-
-.home-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
-  color: var(--text);
-  margin-bottom: 10px;
-}
-
-.home-description {
-  font-size: 1rem;
-  color: var(--text-muted);
-  font-weight: 400;
-}
 
 .post-list {
   list-style: none;
@@ -195,7 +176,7 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-.post-item .post-title {
+.post-item-title {
   font-size: 1.2rem;
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -203,12 +184,13 @@ body {
   margin-bottom: 6px;
 }
 
-.post-item .post-title a {
+.post-item-title a,
+.post-item-title a:visited {
   color: var(--text);
   text-decoration: none;
 }
 
-.post-item .post-title a:hover {
+.post-item-title a:hover {
   color: var(--link-hover);
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -223,6 +205,103 @@ body {
 
 .no-posts {
   color: var(--text-muted);
+}
+
+/* ============================================================
+   FEATURED POST (home — latest post rendered in full)
+   ============================================================ */
+
+.featured-post {
+  margin-bottom: 80px;
+}
+
+.featured-post-header {
+  margin-bottom: 48px;
+}
+
+.featured-post-header .post-date {
+  margin-bottom: 12px;
+}
+
+.featured-post-header .post-description {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.featured-post-title {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+.featured-post-title a,
+.featured-post-title a:visited {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.featured-post-title a:hover {
+  color: var(--link-hover);
+}
+
+/* ============================================================
+   RECENT POSTS (home — compact list below featured)
+   ============================================================ */
+
+.recent-posts {
+  margin-top: 64px;
+  padding-top: 40px;
+  border-top: 1px solid var(--border);
+}
+
+.recent-posts-heading {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 0;
+}
+
+.recent-posts .post-list {
+  margin-top: 0;
+}
+
+.archive-link-wrap {
+  margin-top: 32px;
+  padding-top: 24px;
+}
+
+.archive-link {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.archive-link:hover {
+  color: var(--text);
+}
+
+/* ============================================================
+   ARCHIVE PAGE
+   ============================================================ */
+
+.archive-header {
+  margin-bottom: 48px;
+}
+
+.archive-title {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  color: var(--text);
 }
 
 /* ============================================================

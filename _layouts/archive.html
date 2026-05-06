@@ -1,0 +1,29 @@
+---
+layout: default
+---
+
+<div class="archive">
+  <header class="archive-header">
+    <h1 class="archive-title">All posts</h1>
+  </header>
+
+  {% if site.posts.size > 0 %}
+    <ul class="post-list">
+      {% for post in site.posts %}
+        <li class="post-item">
+          <time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">
+            {{ post.date | date: "%B %-d, %Y" }}
+          </time>
+          <h2 class="post-item-title">
+            <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+          </h2>
+          {% if post.description %}
+            <p class="post-excerpt">{{ post.description }}</p>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="no-posts">No posts yet.</p>
+  {% endif %}
+</div>
