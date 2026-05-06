@@ -117,12 +117,10 @@ The key insight is that none of these devices need to be powerful. They don't co
 
 A few takeaways after building and using this stack daily:
 
-**Agent memory is a UX problem, not an AI problem.** The hard part isn't getting an agent to remember things — it's making the memory layer something a human can inspect, edit, and trust. Markdown files in Obsidian are dramatically less sophisticated than a vector database, and dramatically more useful in practice because I can review them on my phone. One trade-off worth naming: because agents can write memories, a successful prompt injection in any session could persist to future sessions. The two-tier design — summary in context, full content on explicit read — limits unintended propagation, and I periodically review what's in the vault.
+**UX for Agent Memory is a hard requirement** The hard part isn't getting an agent to remember things — it's making the memory layer accessable from anywhere. Markdown files in Obsidian are dramatically less sophisticated than a vector database, and dramatically more useful in practice because I can review them on my phone. Claude Code uses a similar approach with the `memory.md` file but it's tied to the repo - it requires more hoops to jump through for editing and reviewing on the go.
 
 **Scheduling is the gateway to autonomous agents.** The moment you can say "run this every morning at 6am" instead of "run this right now while I watch," your relationship with agents changes. They become background processes, not pair programmers. Most of my agent output now happens while I'm doing something else.
 
 **Observability isn't optional — it's the accountability layer.** Traces don't prevent agents from doing something wrong; they tell you what happened when they do. That's what lets me audit autonomous runs after the fact and maintain confidence over time.
 
 **The best infrastructure is boring infrastructure.** Tailscale, LaunchAgent cron, markdown files, HTTP APIs, git worktrees. None of this is novel. All of it is reliable. The most sophisticated part of this stack is the OTel instrumentation, and even that is just standard distributed tracing applied to a new domain.
-
-
