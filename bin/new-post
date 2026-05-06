@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+POSTS_DIR="$(dirname "$0")/../_posts"
+TODAY="$(date +%Y-%m-%d)"
+
+# ── Helpers ───────────────────────────────────────────────────────────────────
+
+prompt() {
+  local label="$1"
+  local var="$2"
+  local default="${3:-}"
+  if [[ -n "$default" ]]; then
+    printf '%s [%s]: ' "$label" "$default"
+  else
+    printf '%s: ' "$label"
+  fi
+  read -r "$var"
+  # Use default if empty
+  if [[ -z "${!var}" && -n "$default" ]]; then
+    eval "$var=\"$default\""
+  fi
+}
+
+slugify() {
+  echo "$1" \
+    | tr '[:upper:]' '[:lower:]' \
+    | sed 's/[^a-z0-9]/-/g' \
+    | sed 's/--*/-/g' \
+    | sed 's/^-//;s/-$//'
+}
+
+# ── Gather inputs ─────────────────────────────────────────────────────────────
+
+echo ""
+echo "New post"
+echo "────────"
+
+prompt "Title" title
+if [[ -z "$title" ]]; then
+  echo "Title is required." >&2
+  exit 1
+fi
+
+default_slug="$(slugify "$title")"
+prompt "Slug" slug "$default_slug"
+if [[ -z "$slug" ]]; then
+  echo "Slug is required." >&2
+  exit 1
+fi
+
+prompt "Description (optional)" description ""
+
+# ── Write file ────────────────────────────────────────────────────────────────
+
+filename="${POSTS_DIR}/${TODAY}-${slug}.md"
+
+if [[ -f "$filename" ]]; then
+  echo ""
+  echo "File already exists: $filename" >&2
+  exit 1
+fi
+
+cat > "$filename" <<FRONTMATTER
+---
+layout: post
+title: "${title}"
+slug: ${slug}
+date: ${TODAY}
+description: "${description}"
+---
+
+Write your post here.
+FRONTMATTER
+
+echo ""
+echo "Created: $filename"
+echo "URL:     /${slug}/"
+echo ""
+
+# Open in editor if available
+if [[ -n "${EDITOR:-}" ]]; then
+  "$EDITOR" "$filename"
+elif command -v code &>/dev/null; then
+  code "$filename"
+elif command -v open &>/dev/null; then
+  open "$filename"
+fi

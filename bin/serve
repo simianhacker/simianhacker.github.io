@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
+eval "$(rbenv init -)" 2>/dev/null || true
+
+if ! bundle check &>/dev/null; then
+  echo "Dependencies out of date — run  bin/bootstrap  first."
+  exit 1
+fi
+
+echo "Starting local preview at http://localhost:4000"
+echo "Press Ctrl+C to stop."
+echo ""
+
+bundle exec jekyll serve --livereload --open-url
