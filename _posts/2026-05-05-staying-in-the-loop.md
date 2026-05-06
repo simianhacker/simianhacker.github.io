@@ -7,9 +7,6 @@ description: "The infrastructure around your agents — scheduling, memory, obse
 ---
 
 What makes agents *reliable* — trustworthy enough to run while you're away from your desk — is everything around them. It's how fast a human can review and course-correct. That's the bottleneck. Which means a good agentic infrastructure is optimized around the human ergonomics of using the system, to have the same tools everywhere.
-
-The moment you go from "I have an agent that can write code" to "I have agents that reliably do work while I'm away from my desk," you run into a set of problems that have nothing to do with LLMs. You need scheduling. You need memory that persists across sessions. You need observability so you can tell what happened while you were gone. You need the ability to supervise from whatever device is in your hand, not just the machine the agent is running on.
-
 In short, you need infrastructure.
 
 This post walks through the stack I've built to support agent software engineering as a daily practice — not as a demo, but as a production workflow. Every piece exists because I hit a real problem and needed a real solution.
