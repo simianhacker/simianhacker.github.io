@@ -24,6 +24,8 @@ My work laptop sits on my desk running [OpenCode](https://opencode.ai), an agent
 
 This means I can start a coding session on my laptop, walk to the couch, and pick it up on my iPad. I can dispatch an agent to work on something, leave my desk, and check on it from my phone. The laptop is the server. Everything else is a thin client.
 
+One detail worth noting: OpenCode runs inside a [macOS Seatbelt](https://developer.apple.com/documentation/security/app_sandbox) sandbox. A small wrapper script launches `opencode serve` via `sandbox-exec`, restricting writes to `~/Projects`, config and cache directories, and temp paths. Everything else is read-only. It's a lightweight blast-radius control — if an agent goes sideways, it can't touch the rest of the filesystem.
+
 
 ## Memory: Obsidian as the shared brain
 
