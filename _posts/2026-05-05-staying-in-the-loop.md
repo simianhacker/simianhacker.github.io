@@ -24,7 +24,7 @@ My work laptop sits on my desk running [OpenCode](https://opencode.ai), an agent
 
 This means I can start a coding session on my laptop, walk to the couch, and pick it up on my iPad. I can dispatch an agent to work on something, leave my desk, and check on it from my phone. The laptop is the server. Everything else is a thin client.
 
-One detail worth noting: OpenCode currently runs inside a [macOS Seatbelt](https://developer.apple.com/documentation/security/app_sandbox) sandbox — a small wrapper script launches `opencode serve` via `sandbox-exec`, restricting writes to `~/Projects`, config and cache directories, and temp paths. It's a lightweight blast-radius control, but reads are unrestricted, which limits how much you can actually trust it. I'm in the process of migrating to a Docker container for proper filesystem and network isolation.
+One detail worth noting: OpenCode currently runs inside a [macOS Seatbelt](https://developer.apple.com/documentation/security/app_sandbox) sandbox — a small wrapper script launches `opencode serve` via `sandbox-exec`, restricting writes to `~/Projects`, config and cache directories, and temp paths. The sandbox explicitly blocks reads and writes to `~/.ssh`, `~/.gnupg`, the macOS Keychain, and macOS credential storage. Reads are broadly permitted elsewhere — `~/.aws`, shell history, dotfile credentials — which is why I'm migrating to Docker for proper filesystem isolation.
 
 
 ## Memory: Obsidian as the shared brain
@@ -79,7 +79,7 @@ content, open the file directly.
 </memory-context>
 ```
 
-Because it's all in Obsidian, I can review and edit memories from any device using the native apps. I pay for Obsidian Sync, which keeps the vault consistent across my laptop, iPad, and phone. Edit a memory on my phone, and the next agent session on my laptop picks up the change. The feedback loop between human review and agent behavior is just... editing a markdown file.
+Because it's all in Obsidian, I can review and edit memories from any device using the native apps. I pay for Obsidian Sync, which keeps the vault consistent across my laptop, iPad, and phone. The vault uses end-to-end encryption with a vault password — Obsidian can't read the contents, and neither can anyone who compromises the account without the password. Edit a memory on my phone, and the next agent session on my laptop picks up the change. The feedback loop between human review and agent behavior is just... editing a markdown file.
 
 ## Mission Control: a control plane for agent work
 
@@ -123,11 +123,11 @@ The key insight is that none of these devices need to be powerful. They don't co
 
 A few takeaways after building and using this stack daily:
 
-**Agent memory is a UX problem, not an AI problem.** The hard part isn't getting an agent to remember things — it's making the memory layer something a human can inspect, edit, and trust. Markdown files in Obsidian are dramatically less sophisticated than a vector database, and dramatically more useful in practice because I can review them on my phone.
+**Agent memory is a UX problem, not an AI problem.** The hard part isn't getting an agent to remember things — it's making the memory layer something a human can inspect, edit, and trust. Markdown files in Obsidian are dramatically less sophisticated than a vector database, and dramatically more useful in practice because I can review them on my phone. One trade-off worth naming: because agents can write memories, a successful prompt injection in any session could persist to future sessions. The two-tier design — summary in context, full content on explicit read — limits unintended propagation, and I periodically review what's in the vault.
 
 **Scheduling is the gateway to autonomous agents.** The moment you can say "run this every morning at 6am" instead of "run this right now while I watch," your relationship with agents changes. They become background processes, not pair programmers. Most of my agent output now happens while I'm doing something else.
 
-**Observability isn't optional — it's the trust layer.** I only trust agents to run autonomously because I can see what they did. Traces, logs, and metrics aren't a nice-to-have. They're the mechanism by which I maintain control over systems that act on my behalf.
+**Observability isn't optional — it's the accountability layer.** Traces don't prevent agents from doing something wrong; they tell you what happened when they do. That's what lets me audit autonomous runs after the fact and maintain confidence over time.
 
 **The best infrastructure is boring infrastructure.** Tailscale, LaunchAgent cron, markdown files, HTTP APIs, git worktrees. None of this is novel. All of it is reliable. The most sophisticated part of this stack is the OTel instrumentation, and even that is just standard distributed tracing applied to a new domain.
 
