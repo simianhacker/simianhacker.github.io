@@ -1,13 +1,10 @@
 ---
 layout: post
-title: "Staying in the Loop: My Agentic Engineering Platform"
+title: "Staying in the Loop"
 slug: staying-in-the-loop
 date: 2026-05-05
-description: "The infrastructure around your agents — scheduling, memory, observability, supervision — is what makes them reliable enough to trust."
+description: "A tour of my agentic coding infrastructure featuring scheduling, memory, observability, and supervision"
 ---
-
-What makes agents *reliable* — trustworthy enough to run while you're away from your desk — is everything around them. It's how fast a human can review and course-correct. That's the bottleneck. Which means a good agentic infrastructure is optimized around the human ergonomics of using the system, to have the same tools everywhere.
-In short, you need infrastructure.
 
 This post walks through the stack I've built to support agent software engineering as a daily practice — not as a demo, but as a production workflow. Every piece exists because I hit a real problem and needed a real solution.
 
