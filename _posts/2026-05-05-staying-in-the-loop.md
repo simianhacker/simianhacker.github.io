@@ -24,7 +24,7 @@ My work laptop sits on my desk running [OpenCode](https://opencode.ai), an agent
 
 This means I can start a coding session on my laptop, walk to the couch, and pick it up on my iPad. I can dispatch an agent to work on something, leave my desk, and check on it from my phone. The laptop is the server. Everything else is a thin client.
 
-One detail worth noting: OpenCode currently runs inside a [macOS Seatbelt](https://developer.apple.com/documentation/security/app_sandbox) sandbox — a small wrapper script launches `opencode serve` via `sandbox-exec`, restricting writes to `~/Projects`, config and cache directories, and temp paths. The sandbox explicitly blocks reads and writes to `~/.ssh`, `~/.gnupg`, the macOS Keychain, and macOS credential storage. Reads are broadly permitted elsewhere — `~/.aws`, shell history, dotfile credentials — which is why I'm migrating to Docker for proper filesystem isolation.
+One detail worth noting: OpenCode currently runs inside a [macOS Seatbelt](https://developer.apple.com/documentation/security/app_sandbox) sandbox — a small wrapper script launches `opencode serve` via `sandbox-exec`, restricting writes to `~/Projects`, config and cache directories, and temp paths. The sandbox explicitly blocks reads and writes to `~/.ssh`, `~/.gnupg`, the macOS Keychain, and macOS credential storage. Reads are broadly permitted elsewhere, which is why I'm migrating to Docker for proper filesystem isolation.
 
 
 ## Memory: Obsidian as the shared brain
