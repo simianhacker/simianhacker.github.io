@@ -3,7 +3,7 @@ layout: post
 title: "Staying in the Loop: My Agentic Engineering Platform"
 slug: staying-in-the-loop
 date: 2026-05-05
-description: "Agent software engineering is more than prompt engineering. The infrastructure around your agents — scheduling, memory, observability, supervision — is what makes them reliable enough to trust."
+description: "The infrastructure around your agents — scheduling, memory, observability, supervision — is what makes them reliable enough to trust."
 ---
 
 What makes agents *reliable* — trustworthy enough to run while you're away from your desk — is everything around them. It's how fast a human can review and course-correct. That's the bottleneck. Which means a good agentic infrastructure is optimized around the human ergonomics of using the system, to have the same tools everywhere.
