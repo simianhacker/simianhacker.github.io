@@ -6,7 +6,7 @@ date: 2026-05-05
 description: "A tour of my agentic coding infrastructure featuring scheduling, memory, observability, and supervision"
 ---
 
-This post walks through the stack I've built to support agent software engineering as a daily practice — not as a demo, but as a production workflow. Every piece exists because I hit a real problem and needed a real solution.
+This post walks through the stack I've built to support my agentic software engineering efforts. Every piece exists because I hit a real problem and needed a real solution.
 
 ## The core insight: separate compute from control
 
